@@ -15,7 +15,7 @@
     }
 
     .container {
-      max-width: 700px;
+      max-width: 720px;
       margin: auto;
     }
 
@@ -27,6 +27,7 @@
     .subtitle {
       text-align: center;
       color: #b3b3b3;
+      line-height: 1.4;
     }
 
     .filters {
@@ -38,7 +39,7 @@
     .filter-btn {
       flex: 1;
       padding: 12px;
-      border-radius: 20px;
+      border-radius: 22px;
       border: 1px solid #555;
       background: #242424;
       color: white;
@@ -51,29 +52,29 @@
       border-color: #1DB954;
     }
 
-    button.main {
+    button.main,
+    button.secondary {
       display: block;
       width: 100%;
+      border: none;
+      border-radius: 30px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button.main {
       background: #1DB954;
       color: black;
-      border: none;
       padding: 16px;
-      border-radius: 30px;
       font-size: 18px;
-      font-weight: bold;
       margin: 20px 0;
     }
 
     button.secondary {
-      display: block;
-      width: 100%;
       background: #333;
       color: white;
-      border: none;
       padding: 14px;
-      border-radius: 30px;
       font-size: 16px;
-      font-weight: bold;
       margin-bottom: 20px;
     }
 
@@ -84,7 +85,14 @@
       line-height: 1.5;
     }
 
-    .album {
+    .section-title {
+      margin-top: 28px;
+      margin-bottom: 12px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .release {
       background: #242424;
       padding: 14px;
       border-radius: 12px;
@@ -102,12 +110,12 @@
       flex-shrink: 0;
     }
 
-    .album-info {
+    .release-info {
       flex: 1;
       min-width: 0;
     }
 
-    .album-name {
+    .release-name {
       font-size: 17px;
       font-weight: bold;
     }
@@ -117,10 +125,26 @@
       margin-top: 4px;
     }
 
-    .release-date {
+    .meta {
       color: #999;
       font-size: 13px;
       margin-top: 5px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #333;
+      color: #ddd;
+      border-radius: 12px;
+      padding: 3px 8px;
+      font-size: 11px;
+      margin-top: 6px;
+      margin-right: 4px;
+    }
+
+    .trusted {
+      background: #174f2a;
+      color: #b7f7c9;
     }
 
     .spotify-link {
@@ -132,8 +156,8 @@
     }
 
     .debug {
-      font-size: 13px;
-      color: #888;
+      font-size: 12px;
+      color: #777;
       margin-top: 8px;
     }
   </style>
@@ -146,7 +170,7 @@
   <h1>🎵 New Country Music Finder</h1>
 
   <p class="subtitle">
-    Find newly released country music on Spotify
+    New releases from artists you already follow or listen to on Spotify.
   </p>
 
   <button
@@ -203,7 +227,6 @@
 
 </div>
 
-
 <script>
 
 const clientId =
@@ -215,7 +238,9 @@ const redirectUri =
 let selectedRange = "today";
 
 
-/* DATE RANGE */
+/* -------------------------
+   RANGE
+------------------------- */
 
 function setRange(range) {
 
@@ -223,15 +248,23 @@ function setRange(range) {
 
   document
     .getElementById("todayButton")
-    .classList.toggle("active", range === "today");
+    .classList.toggle(
+      "active",
+      range === "today"
+    );
 
   document
     .getElementById("weekButton")
-    .classList.toggle("active", range === "week");
+    .classList.toggle(
+      "active",
+      range === "week"
+    );
 }
 
 
-/* PKCE LOGIN */
+/* -------------------------
+   PKCE LOGIN
+------------------------- */
 
 function generateRandomString(length) {
 
@@ -241,8 +274,11 @@ function generateRandomString(length) {
   let result = "";
 
   for (let i = 0; i < length; i++) {
+
     result += chars.charAt(
-      Math.floor(Math.random() * chars.length)
+      Math.floor(
+        Math.random() * chars.length
+      )
     );
   }
 
@@ -252,13 +288,12 @@ function generateRandomString(length) {
 
 async function sha256(plain) {
 
-  const encoder = new TextEncoder();
-
-  const data = encoder.encode(plain);
+  const encoder =
+    new TextEncoder();
 
   return window.crypto.subtle.digest(
     "SHA-256",
-    data
+    encoder.encode(plain)
   );
 }
 
@@ -305,9 +340,14 @@ async function loginWithSpotify() {
 
       redirect_uri: redirectUri,
 
-      code_challenge_method: "S256",
+      scope:
+        "user-follow-read user-top-read",
 
-      code_challenge: challenge
+      code_challenge_method:
+        "S256",
+
+      code_challenge:
+        challenge
 
     }).toString();
 
@@ -316,7 +356,9 @@ async function loginWithSpotify() {
 }
 
 
-/* TOKEN */
+/* -------------------------
+   TOKEN
+------------------------- */
 
 async function getToken(code) {
 
@@ -372,7 +414,9 @@ async function getToken(code) {
 }
 
 
-/* CALLBACK */
+/* -------------------------
+   CALLBACK
+------------------------- */
 
 async function handleSpotifyCallback() {
 
@@ -445,80 +489,285 @@ function showConnected() {
 }
 
 
-/* SEARCH */
+/* -------------------------
+   API HELPERS
+------------------------- */
 
-async function searchAlbums(query, token) {
+async function spotifyFetch(
+  url,
+  token
+) {
 
-  let albums = [];
-
-  for (
-    let offset = 0;
-    offset < 100;
-    offset += 10
-  ) {
-
-    const url =
-      "https://api.spotify.com/v1/search?" +
-      new URLSearchParams({
-
-        q: query,
-
-        type: "album",
-
-        market: "US",
-
-        limit: "10",
-
-        offset: offset.toString()
-
-      });
-
-    const response =
-      await fetch(
-        url,
-        {
-          headers: {
-            Authorization:
-              "Bearer " + token
-          }
+  const response =
+    await fetch(
+      url,
+      {
+        headers: {
+          Authorization:
+            "Bearer " + token
         }
-      );
+      }
+    );
 
-    if (response.status === 401) {
-      throw new Error("SESSION_EXPIRED");
-    }
-
-    if (response.status === 429) {
-      throw new Error("RATE_LIMIT");
-    }
-
-    if (!response.ok) {
-
-      console.error(
-        await response.text()
-      );
-
-      break;
-    }
-
-    const data =
-      await response.json();
-
-    const items =
-      data.albums?.items || [];
-
-    albums.push(...items);
-
-    if (items.length < 10) {
-      break;
-    }
+  if (response.status === 401) {
+    throw new Error("SESSION_EXPIRED");
   }
 
-  return albums;
+  if (response.status === 429) {
+    throw new Error("RATE_LIMIT");
+  }
+
+  if (!response.ok) {
+
+    const text =
+      await response.text();
+
+    console.error(
+      response.status,
+      text
+    );
+
+    throw new Error(
+      "SPOTIFY_ERROR"
+    );
+  }
+
+  return response.json();
 }
 
 
-/* FIND MUSIC */
+/* -------------------------
+   FOLLOWED ARTISTS
+------------------------- */
+
+async function getFollowedArtists(
+  token
+) {
+
+  let artists = [];
+
+  let url =
+    "https://api.spotify.com/v1/me/following?type=artist&limit=50";
+
+  while (url) {
+
+    const data =
+      await spotifyFetch(
+        url,
+        token
+      );
+
+    const items =
+      data.artists?.items || [];
+
+    artists.push(
+      ...items.map(
+        artist => ({
+          ...artist,
+          source: "Following"
+        })
+      )
+    );
+
+    url =
+      data.artists?.next || null;
+  }
+
+  return artists;
+}
+
+
+/* -------------------------
+   TOP ARTISTS
+------------------------- */
+
+async function getTopArtists(
+  token
+) {
+
+  const ranges = [
+    "short_term",
+    "medium_term",
+    "long_term"
+  ];
+
+  let artists = [];
+
+  for (
+    const timeRange of ranges
+  ) {
+
+    const data =
+      await spotifyFetch(
+
+        "https://api.spotify.com/v1/me/top/artists?" +
+
+        new URLSearchParams({
+
+          time_range:
+            timeRange,
+
+          limit:
+            "50"
+
+        }),
+
+        token
+      );
+
+    artists.push(
+      ...(data.items || [])
+        .map(
+          artist => ({
+            ...artist,
+            source: "Top Artist"
+          })
+        )
+    );
+  }
+
+  return artists;
+}
+
+
+/* -------------------------
+   ARTIST RELEASES
+------------------------- */
+
+async function getArtistReleases(
+  artist,
+  token
+) {
+
+  let releases = [];
+
+  let offset = 0;
+
+  while (offset < 50) {
+
+    const url =
+      "https://api.spotify.com/v1/artists/" +
+      artist.id +
+      "/albums?" +
+
+      new URLSearchParams({
+
+        include_groups:
+          "album,single",
+
+        market:
+          "US",
+
+        limit:
+          "10",
+
+        offset:
+          offset.toString()
+
+      });
+
+
+    const data =
+      await spotifyFetch(
+        url,
+        token
+      );
+
+
+    const items =
+      data.items || [];
+
+
+    releases.push(
+      ...items.map(
+        release => ({
+          ...release,
+          trustedArtist:
+            artist.name,
+
+          trustedSource:
+            artist.source
+        })
+      )
+    );
+
+
+    if (
+      items.length < 10
+    ) {
+      break;
+    }
+
+
+    offset += 10;
+  }
+
+
+  return releases;
+}
+
+
+/* -------------------------
+   DATE FILTER
+------------------------- */
+
+function releaseIsRecent(
+  release
+) {
+
+  if (
+    !release.release_date ||
+    release.release_date_precision
+      !== "day"
+  ) {
+    return false;
+  }
+
+
+  const now =
+    new Date();
+
+
+  const today =
+    new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    );
+
+
+  let cutoff =
+    new Date(today);
+
+
+  if (
+    selectedRange ===
+    "week"
+  ) {
+
+    cutoff.setDate(
+      cutoff.getDate() - 6
+    );
+  }
+
+
+  const releaseDate =
+    new Date(
+      release.release_date +
+      "T00:00:00"
+    );
+
+
+  return (
+    releaseDate >= cutoff &&
+    releaseDate <= now
+  );
+}
+
+
+/* -------------------------
+   FIND MUSIC
+------------------------- */
 
 async function findNewMusic() {
 
@@ -527,6 +776,7 @@ async function findNewMusic() {
       "spotify_access_token"
     );
 
+
   if (!token) {
 
     loginWithSpotify();
@@ -534,76 +784,148 @@ async function findNewMusic() {
     return;
   }
 
+
   const status =
     document.getElementById(
       "status"
     );
+
 
   const results =
     document.getElementById(
       "results"
     );
 
+
   results.innerHTML = "";
-
-  status.innerText =
-    "Searching Spotify for new releases...";
-
-
-  /*
-    Spotify allows tag:new for albums.
-    We'll combine that with several
-    country-related search terms.
-  */
-
-  const searches = [
-
-    'tag:new country',
-
-    'tag:new "country music"',
-
-    'tag:new americana',
-
-    'tag:new "red dirt"',
-
-    'tag:new "country rock"',
-
-    'tag:new "Texas country"',
-
-    'tag:new "outlaw country"',
-
-    'tag:new bluegrass'
-
-  ];
-
-
-  let allAlbums = [];
 
 
   try {
 
+    status.innerText =
+      "Loading artists you trust...";
+
+
+    const [
+      followedArtists,
+      topArtists
+    ] =
+      await Promise.all([
+
+        getFollowedArtists(
+          token
+        ),
+
+        getTopArtists(
+          token
+        )
+
+      ]);
+
+
+    const mergedArtists =
+      [
+        ...followedArtists,
+        ...topArtists
+      ];
+
+
+    const uniqueArtists =
+      Array.from(
+        new Map(
+          mergedArtists.map(
+            artist => [
+              artist.id,
+              artist
+            ]
+          )
+        ).values()
+      );
+
+
+    status.innerText =
+      "Checking " +
+      uniqueArtists.length +
+      " artists for new releases...";
+
+
+    let allReleases = [];
+
+
     for (
       let i = 0;
-      i < searches.length;
+      i < uniqueArtists.length;
       i++
     ) {
 
+      const artist =
+        uniqueArtists[i];
+
+
       status.innerText =
-        "Searching Spotify... " +
+        "Checking artists... " +
         (i + 1) +
         " of " +
-        searches.length;
+        uniqueArtists.length +
+        "\n" +
+        artist.name;
 
-      const found =
-        await searchAlbums(
-          searches[i],
+
+      const releases =
+        await getArtistReleases(
+          artist,
           token
         );
 
-      allAlbums.push(...found);
+
+      allReleases.push(
+        ...releases
+      );
     }
 
+
+    const uniqueReleases =
+      Array.from(
+        new Map(
+          allReleases
+            .filter(
+              release =>
+                release?.id
+            )
+            .map(
+              release => [
+                release.id,
+                release
+              ]
+            )
+        ).values()
+      );
+
+
+    const recent =
+      uniqueReleases
+        .filter(
+          releaseIsRecent
+        )
+        .sort(
+          (a, b) =>
+
+            b.release_date
+              .localeCompare(
+                a.release_date
+              )
+        );
+
+
+    displayReleases(
+      recent,
+      followedArtists.length,
+      uniqueArtists.length
+    );
+
+
   } catch (error) {
+
 
     if (
       error.message ===
@@ -643,131 +965,30 @@ async function findNewMusic() {
     }
 
 
+    console.error(error);
+
+
     status.innerText =
-      "Spotify search failed.";
-
-    return;
+      "Something went wrong while checking your artists.";
   }
-
-
-  /* REMOVE DUPLICATES */
-
-  const uniqueAlbums =
-    Array.from(
-      new Map(
-        allAlbums
-          .filter(album => album?.id)
-          .map(
-            album => [
-              album.id,
-              album
-            ]
-          )
-      ).values()
-    );
-
-
-  /* DATE RANGE */
-
-  const now =
-    new Date();
-
-  const todayStart =
-    new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate()
-    );
-
-
-  let cutoff =
-    new Date(todayStart);
-
-
-  if (
-    selectedRange ===
-    "week"
-  ) {
-
-    cutoff.setDate(
-      cutoff.getDate() - 6
-    );
-  }
-
-
-  /* FILTER RELEASE DATE */
-
-  const recentAlbums =
-    uniqueAlbums.filter(
-      album => {
-
-        if (
-          !album.release_date ||
-          album.release_date_precision !== "day"
-        ) {
-
-          return false;
-        }
-
-
-        const release =
-          new Date(
-            album.release_date +
-            "T00:00:00"
-          );
-
-
-        return (
-          release >= cutoff &&
-          release <= now
-        );
-      }
-    );
-
-
-  /* SORT */
-
-  recentAlbums.sort(
-    (a, b) => {
-
-      const dateCompare =
-        b.release_date.localeCompare(
-          a.release_date
-        );
-
-      if (dateCompare !== 0) {
-        return dateCompare;
-      }
-
-      return (
-        a.artists?.[0]?.name || ""
-      ).localeCompare(
-        b.artists?.[0]?.name || ""
-      );
-    }
-  );
-
-
-  displayAlbums(
-    recentAlbums,
-    allAlbums.length,
-    uniqueAlbums.length
-  );
 }
 
 
-/* DISPLAY */
+/* -------------------------
+   DISPLAY
+------------------------- */
 
-function displayAlbums(
-  albums,
-  rawCount,
-  uniqueCount
+function displayReleases(
+  releases,
+  followedCount,
+  trustedCount
 ) {
 
   const results =
     document.getElementById(
       "results"
     );
+
 
   const status =
     document.getElementById(
@@ -776,23 +997,22 @@ function displayAlbums(
 
 
   if (
-    albums.length === 0
+    releases.length === 0
   ) {
 
     status.innerHTML =
 
       selectedRange === "today"
 
-        ? "No qualifying releases from today were found."
+      ? "No new releases from your trusted artists were found today."
 
-        : "No qualifying releases from the last 7 days were found.";
+      : "No new releases from your trusted artists were found in the last 7 days.";
 
 
     status.innerHTML +=
-
       `<div class="debug">
-        Spotify returned ${rawCount} results,
-        representing ${uniqueCount} unique albums.
+        Checked ${trustedCount} trusted artists,
+        including ${followedCount} followed artists.
       </div>`;
 
     return;
@@ -800,29 +1020,29 @@ function displayAlbums(
 
 
   status.innerHTML =
-
-    `${albums.length} new releases found
+    `${releases.length} trusted new releases found
 
     <div class="debug">
-      Spotify returned ${rawCount} search results,
-      representing ${uniqueCount} unique albums.
+      Checked ${trustedCount} trusted artists,
+      including ${followedCount} followed artists.
     </div>`;
 
 
-  albums.forEach(
-    album => {
+  releases.forEach(
+    release => {
 
       const div =
         document.createElement(
           "div"
         );
 
+
       div.className =
-        "album";
+        "release";
 
 
       const artists =
-        (album.artists || [])
+        (release.artists || [])
           .map(
             artist =>
               artist.name
@@ -831,14 +1051,20 @@ function displayAlbums(
 
 
       const image =
-        album.images?.[1]?.url ||
-        album.images?.[0]?.url ||
+        release.images?.[1]?.url ||
+        release.images?.[0]?.url ||
         "";
 
 
       const spotifyUrl =
-        album.external_urls?.spotify ||
+        release.external_urls?.spotify ||
         "#";
+
+
+      const typeLabel =
+        release.album_type === "single"
+        ? "Single / EP"
+        : "Album";
 
 
       div.innerHTML = `
@@ -849,26 +1075,34 @@ function displayAlbums(
           `<img
             class="cover"
             src="${image}"
-            alt="Album artwork"
+            alt="Spotify artwork"
           >`
           :
           ""
         }
 
-        <div class="album-info">
+        <div class="release-info">
 
-          <div class="album-name">
-            ${escapeHtml(album.name)}
+          <div class="release-name">
+            ${escapeHtml(release.name)}
           </div>
 
           <div class="artist">
             ${escapeHtml(artists)}
           </div>
 
-          <div class="release-date">
+          <div class="meta">
             Released:
-            ${album.release_date}
+            ${release.release_date}
           </div>
+
+          <span class="badge">
+            ${typeLabel}
+          </span>
+
+          <span class="badge trusted">
+            ${escapeHtml(release.trustedSource)}
+          </span>
 
           <a
             class="spotify-link"
@@ -891,7 +1125,9 @@ function displayAlbums(
 }
 
 
-/* HTML SAFETY */
+/* -------------------------
+   SAFETY
+------------------------- */
 
 function escapeHtml(text) {
 
@@ -907,7 +1143,9 @@ function escapeHtml(text) {
 }
 
 
-/* DISCONNECT */
+/* -------------------------
+   DISCONNECT
+------------------------- */
 
 function logout() {
 
