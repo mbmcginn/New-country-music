@@ -1,269 +1,237 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>New Country Music Finder</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New Country Music Finder</title>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #121212;
-      color: white;
-      margin: 0;
-      padding: 20px;
-    }
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #121212;
+  color: white;
+  margin: 0;
+  padding: 20px;
+}
 
-    .container {
-      max-width: 720px;
-      margin: auto;
-    }
+.container {
+  max-width: 720px;
+  margin: auto;
+}
 
-    h1 {
-      text-align: center;
-      margin-top: 25px;
-    }
+h1 {
+  text-align: center;
+  margin-top: 25px;
+}
 
-    .subtitle {
-      text-align: center;
-      color: #b3b3b3;
-      line-height: 1.4;
-    }
+.subtitle {
+  text-align: center;
+  color: #b3b3b3;
+}
 
-    .filters {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
+.filters {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+}
 
-    .filter-btn {
-      flex: 1;
-      padding: 12px;
-      border-radius: 22px;
-      border: 1px solid #555;
-      background: #242424;
-      color: white;
-      font-weight: bold;
-    }
+.filter-btn {
+  flex: 1;
+  padding: 12px 5px;
+  border-radius: 22px;
+  border: 1px solid #555;
+  background: #242424;
+  color: white;
+  font-weight: bold;
+}
 
-    .filter-btn.active {
-      background: #1DB954;
-      color: black;
-      border-color: #1DB954;
-    }
+.filter-btn.active {
+  background: #1DB954;
+  color: black;
+  border-color: #1DB954;
+}
 
-    button.main,
-    button.secondary {
-      display: block;
-      width: 100%;
-      border: none;
-      border-radius: 30px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+button.main,
+button.secondary {
+  display: block;
+  width: 100%;
+  border: none;
+  border-radius: 30px;
+  font-weight: bold;
+}
 
-    button.main {
-      background: #1DB954;
-      color: black;
-      padding: 16px;
-      font-size: 18px;
-      margin: 20px 0;
-    }
+button.main {
+  background: #1DB954;
+  color: black;
+  padding: 16px;
+  font-size: 18px;
+  margin: 20px 0;
+}
 
-    button.secondary {
-      background: #333;
-      color: white;
-      padding: 14px;
-      font-size: 16px;
-      margin-bottom: 14px;
-    }
+button.secondary {
+  background: #333;
+  color: white;
+  padding: 14px;
+  font-size: 16px;
+  margin-bottom: 14px;
+}
 
-    .status {
-      text-align: center;
-      color: #b3b3b3;
-      margin: 20px 0;
-      line-height: 1.5;
-    }
+.status {
+  text-align: center;
+  color: #b3b3b3;
+  margin: 20px 0;
+  line-height: 1.5;
+}
 
-    .release {
-      background: #242424;
-      padding: 14px;
-      border-radius: 12px;
-      margin-bottom: 12px;
-      display: flex;
-      gap: 14px;
-      align-items: center;
-    }
+.release {
+  background: #242424;
+  padding: 14px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
 
-    .cover {
-      width: 90px;
-      height: 90px;
-      object-fit: cover;
-      border-radius: 6px;
-      flex-shrink: 0;
-    }
+.cover {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 6px;
+}
 
-    .release-info {
-      flex: 1;
-      min-width: 0;
-    }
+.release-info {
+  flex: 1;
+  min-width: 0;
+}
 
-    .release-name {
-      font-size: 17px;
-      font-weight: bold;
-    }
+.release-name {
+  font-size: 17px;
+  font-weight: bold;
+}
 
-    .artist {
-      color: #b3b3b3;
-      margin-top: 4px;
-    }
+.artist {
+  color: #b3b3b3;
+  margin-top: 4px;
+}
 
-    .meta {
-      color: #999;
-      font-size: 13px;
-      margin-top: 5px;
-    }
+.meta {
+  color: #999;
+  font-size: 13px;
+  margin-top: 5px;
+}
 
-    .badge {
-      display: inline-block;
-      background: #174f2a;
-      color: #b7f7c9;
-      border-radius: 12px;
-      padding: 3px 8px;
-      font-size: 11px;
-      margin-top: 6px;
-      margin-right: 5px;
-    }
+.spotify-link {
+  display: block;
+  color: #1DB954;
+  text-decoration: none;
+  font-weight: bold;
+  margin-top: 8px;
+}
 
-    .spotify-link {
-      display: block;
-      margin-top: 9px;
-      color: #1DB954;
-      text-decoration: none;
-      font-weight: bold;
-    }
+.diagnostics {
+  background: #1c1c1c;
+  border-radius: 12px;
+  padding: 15px;
+  margin: 20px 0;
+}
 
-    .debug {
-      font-size: 12px;
-      color: #777;
-      margin-top: 8px;
-    }
+.diagnostic {
+  border-bottom: 1px solid #333;
+  padding: 12px 0;
+  line-height: 1.45;
+}
 
-    .artist-box {
-      background: #1f1f1f;
-      border-radius: 12px;
-      padding: 14px;
-      margin-top: 18px;
-    }
+.diagnostic:last-child {
+  border-bottom: none;
+}
 
-    textarea {
-      width: 100%;
-      min-height: 170px;
-      box-sizing: border-box;
-      background: #181818;
-      color: white;
-      border: 1px solid #444;
-      border-radius: 10px;
-      padding: 12px;
-      font-size: 15px;
-    }
-  </style>
+.good {
+  color: #1DB954;
+}
+
+.warning {
+  color: #ffcc66;
+}
+
+.small {
+  color: #999;
+  font-size: 13px;
+}
+</style>
 </head>
 
 <body>
 
 <div class="container">
 
-  <h1>🎵 New Country Music Finder</h1>
+<h1>🎵 New Country Music Finder</h1>
 
-  <p class="subtitle">
-    Recent releases from artists you trust.
-  </p>
+<p class="subtitle">
+Diagnostic version — verifies what Spotify actually returns.
+</p>
+
+<button
+  id="loginButton"
+  class="main"
+  onclick="loginWithSpotify()"
+>
+Connect Spotify
+</button>
+
+<div id="controls" style="display:none;">
+
+  <div class="filters">
+
+    <button
+      id="todayButton"
+      class="filter-btn"
+      onclick="setRange('today')"
+    >
+      Today
+    </button>
+
+    <button
+      id="weekButton"
+      class="filter-btn active"
+      onclick="setRange('week')"
+    >
+      7 Days
+    </button>
+
+    <button
+      id="monthButton"
+      class="filter-btn"
+      onclick="setRange('month')"
+    >
+      30 Days
+    </button>
+
+  </div>
 
   <button
-    id="loginButton"
     class="main"
-    onclick="loginWithSpotify()"
+    onclick="runDiagnostic()"
   >
-    Connect Spotify
+    Check Priority Artists
   </button>
 
-  <div id="controls" style="display:none;">
+  <button
+    class="secondary"
+    onclick="logout()"
+  >
+    Disconnect Spotify
+  </button>
 
-    <div class="filters">
+</div>
 
-      <button
-        id="todayButton"
-        class="filter-btn active"
-        onclick="setRange('today')"
-      >
-        Today
-      </button>
+<div id="status" class="status">
+Connect Spotify to begin.
+</div>
 
-      <button
-        id="weekButton"
-        class="filter-btn"
-        onclick="setRange('week')"
-      >
-        Last 7 Days
-      </button>
+<div id="diagnostics"></div>
 
-    </div>
-
-    <button
-      class="main"
-      onclick="findNewMusic(false)"
-    >
-      Find New Music
-    </button>
-
-    <button
-      class="secondary"
-      onclick="findNewMusic(true)"
-    >
-      Force Refresh
-    </button>
-
-    <button
-      class="secondary"
-      onclick="toggleArtistEditor()"
-    >
-      Edit Trusted Artists
-    </button>
-
-    <div
-      id="artistEditor"
-      class="artist-box"
-      style="display:none;"
-    >
-
-      <p>One artist per line:</p>
-
-      <textarea id="artistList"></textarea>
-
-      <button
-        class="main"
-        onclick="saveTrustedArtists()"
-      >
-        Save Trusted Artists
-      </button>
-
-    </div>
-
-    <button
-      class="secondary"
-      onclick="logout()"
-    >
-      Disconnect Spotify
-    </button>
-
-  </div>
-
-  <div id="status" class="status">
-    Connect Spotify to begin.
-  </div>
-
-  <div id="results"></div>
+<div id="results"></div>
 
 </div>
 
@@ -275,54 +243,25 @@ const clientId =
 const redirectUri =
   "https://mbmcginn.github.io/New-country-music/";
 
-const CACHE_HOURS = 24;
-
-const TAG_NEW_PAGES = 5;
-
-const DIRECT_ARTISTS_PER_RUN = 8;
-
-let selectedRange = "today";
+let selectedRange = "week";
 
 
-const defaultTrustedArtists = [
+/*
+  These are the four artists
+  we're specifically testing.
+*/
 
+const priorityArtists = [
+  "Mountain Grass Unit",
+  "Alabama Shakes",
   "Silverada",
-  "Red Shahan",
-  "Turnpike Troubadours",
-  "Shane Smith & the Saints",
-  "Cody Jinks",
-  "Tyler Childers",
-  "Sturgill Simpson",
-  "Jason Isbell",
-  "Whiskey Myers",
-  "Charles Wesley Godwin",
-  "49 Winchester",
-  "Flatland Cavalry",
-  "Mike and the Moonpies",
-  "American Aquarium",
-  "Parker McCollum",
-  "Kaitlin Butts",
-  "Zach Bryan",
-  "Ryan Bingham",
-  "Reckless Kelly",
-  "Micky and the Motorcars",
-  "Treaty Oak Revival",
-  "William Clark Green",
-  "Josh Meloy",
-  "Hayes Carll",
-  "Corb Lund",
-  "Colter Wall",
-  "The Steel Woods",
-  "Ward Davis",
-  "Josh Abbott Band",
-  "Randy Rogers Band"
-
+  "Red Shahan"
 ];
 
 
-/* -------------------------
+/* -----------------------------
    RANGE
-------------------------- */
+----------------------------- */
 
 function setRange(range) {
 
@@ -342,92 +281,20 @@ function setRange(range) {
       range === "week"
     );
 
-  showCachedResults();
-}
-
-
-/* -------------------------
-   TRUSTED ARTISTS
-------------------------- */
-
-function getTrustedArtists() {
-
-  const saved =
-    localStorage.getItem(
-      "trusted_artists"
+  document
+    .getElementById("monthButton")
+    .classList.toggle(
+      "active",
+      range === "month"
     );
 
-  if (!saved) {
-    return defaultTrustedArtists;
-  }
-
-  try {
-
-    const parsed =
-      JSON.parse(saved);
-
-    if (
-      Array.isArray(parsed) &&
-      parsed.length > 0
-    ) {
-      return parsed;
-    }
-
-  } catch (e) {}
-
-  return defaultTrustedArtists;
+  displaySavedDiagnosticResults();
 }
 
 
-function toggleArtistEditor() {
-
-  const editor =
-    document.getElementById(
-      "artistEditor"
-    );
-
-  editor.style.display =
-    editor.style.display === "none"
-      ? "block"
-      : "none";
-
-  document.getElementById(
-    "artistList"
-  ).value =
-    getTrustedArtists().join("\n");
-}
-
-
-function saveTrustedArtists() {
-
-  const artists =
-    document
-      .getElementById("artistList")
-      .value
-      .split("\n")
-      .map(x => x.trim())
-      .filter(Boolean);
-
-  localStorage.setItem(
-    "trusted_artists",
-    JSON.stringify(artists)
-  );
-
-  document.getElementById(
-    "artistEditor"
-  ).style.display =
-    "none";
-
-  document.getElementById(
-    "status"
-  ).innerText =
-    "Trusted artist list saved.";
-}
-
-
-/* -------------------------
+/* -----------------------------
    LOGIN
-------------------------- */
+----------------------------- */
 
 function randomString(length) {
 
@@ -436,11 +303,16 @@ function randomString(length) {
 
   let result = "";
 
-  for (let i = 0; i < length; i++) {
+  for (
+    let i = 0;
+    i < length;
+    i++
+  ) {
 
     result += chars.charAt(
       Math.floor(
-        Math.random() * chars.length
+        Math.random() *
+        chars.length
       )
     );
   }
@@ -494,15 +366,20 @@ async function loginWithSpotify() {
   url.search =
     new URLSearchParams({
 
-      client_id: clientId,
+      client_id:
+        clientId,
 
-      response_type: "code",
+      response_type:
+        "code",
 
-      redirect_uri: redirectUri,
+      redirect_uri:
+        redirectUri,
 
-      code_challenge_method: "S256",
+      code_challenge_method:
+        "S256",
 
-      code_challenge: challenge
+      code_challenge:
+        challenge
 
     }).toString();
 
@@ -511,9 +388,9 @@ async function loginWithSpotify() {
 }
 
 
-/* -------------------------
+/* -----------------------------
    TOKEN
-------------------------- */
+----------------------------- */
 
 async function getToken(code) {
 
@@ -527,7 +404,8 @@ async function getToken(code) {
       "https://accounts.spotify.com/api/token",
       {
 
-        method: "POST",
+        method:
+          "POST",
 
         headers: {
           "Content-Type":
@@ -537,12 +415,14 @@ async function getToken(code) {
         body:
           new URLSearchParams({
 
-            client_id: clientId,
+            client_id:
+              clientId,
 
             grant_type:
               "authorization_code",
 
-            code: code,
+            code:
+              code,
 
             redirect_uri:
               redirectUri,
@@ -557,7 +437,9 @@ async function getToken(code) {
   const data =
     await response.json();
 
-  if (data.access_token) {
+  if (
+    data.access_token
+  ) {
 
     localStorage.setItem(
       "spotify_access_token",
@@ -569,9 +451,9 @@ async function getToken(code) {
 }
 
 
-/* -------------------------
+/* -----------------------------
    CALLBACK
-------------------------- */
+----------------------------- */
 
 async function handleCallback() {
 
@@ -585,12 +467,12 @@ async function handleCallback() {
 
   if (code) {
 
-    document.getElementById(
-      "status"
-    ).innerText =
-      "Connecting to Spotify...";
+    document
+      .getElementById("status")
+      .innerText =
+        "Connecting to Spotify...";
 
-    const token =
+    const data =
       await getToken(code);
 
     history.replaceState(
@@ -599,16 +481,18 @@ async function handleCallback() {
       redirectUri
     );
 
-    if (token.access_token) {
+    if (
+      data.access_token
+    ) {
 
       showConnected();
 
     } else {
 
-      document.getElementById(
-        "status"
-      ).innerText =
-        "Spotify connection failed.";
+      document
+        .getElementById("status")
+        .innerText =
+          "Spotify connection failed.";
     }
 
   } else {
@@ -627,28 +511,28 @@ async function handleCallback() {
 
 function showConnected() {
 
-  document.getElementById(
-    "loginButton"
-  ).style.display =
-    "none";
+  document
+    .getElementById("loginButton")
+    .style.display =
+      "none";
 
-  document.getElementById(
-    "controls"
-  ).style.display =
-    "block";
+  document
+    .getElementById("controls")
+    .style.display =
+      "block";
 
-  document.getElementById(
-    "status"
-  ).innerText =
-    "Spotify connected.";
+  document
+    .getElementById("status")
+    .innerText =
+      "Ready. Tap Check Priority Artists.";
 
-  showCachedResults();
+  displaySavedDiagnosticResults();
 }
 
 
-/* -------------------------
-   FETCH
-------------------------- */
+/* -----------------------------
+   SPOTIFY FETCH
+----------------------------- */
 
 async function spotifyFetch(
   url,
@@ -666,13 +550,18 @@ async function spotifyFetch(
       }
     );
 
-  if (response.status === 401) {
+  if (
+    response.status === 401
+  ) {
+
     throw new Error(
       "SESSION_EXPIRED"
     );
   }
 
-  if (response.status === 429) {
+  if (
+    response.status === 429
+  ) {
 
     let body = {};
 
@@ -682,9 +571,9 @@ async function spotifyFetch(
     } catch (e) {}
 
     if (
-      body?.reason ===
-        "QUOTA_EXCEEDED" ||
       body?.error?.reason ===
+        "QUOTA_EXCEEDED" ||
+      body?.reason ===
         "QUOTA_EXCEEDED"
     ) {
 
@@ -693,15 +582,32 @@ async function spotifyFetch(
       );
     }
 
+    const retryAfter =
+      response.headers.get(
+        "Retry-After"
+      );
+
     throw new Error(
-      "RATE_LIMIT"
+      "RATE_LIMIT:" +
+      (retryAfter || "?")
     );
   }
 
-  if (!response.ok) {
+  if (
+    !response.ok
+  ) {
+
+    const body =
+      await response.text();
+
+    console.error(
+      response.status,
+      body
+    );
 
     throw new Error(
-      "SPOTIFY_ERROR"
+      "SPOTIFY_ERROR_" +
+      response.status
     );
   }
 
@@ -709,125 +615,54 @@ async function spotifyFetch(
 }
 
 
-/* -------------------------
-   CACHE
-------------------------- */
+/* -----------------------------
+   OLD CACHE LOOKUP
 
-function getCache() {
+   Reuse Spotify IDs from your
+   existing hybrid cache if present.
+----------------------------- */
+
+function getExistingArtistId(
+  requestedName
+) {
 
   try {
 
-    return JSON.parse(
-      localStorage.getItem(
-        "hybrid_release_cache"
-      )
-    ) || {
-      tagNew: null,
-      direct: {},
-      rotation: 0
-    };
-
-  } catch (e) {
-
-    return {
-      tagNew: null,
-      direct: {},
-      rotation: 0
-    };
-  }
-}
-
-
-function saveCache(cache) {
-
-  localStorage.setItem(
-    "hybrid_release_cache",
-    JSON.stringify(cache)
-  );
-}
-
-
-function cacheFresh(timestamp) {
-
-  if (!timestamp) {
-    return false;
-  }
-
-  return (
-    Date.now() - timestamp
-  ) <
-  CACHE_HOURS *
-  60 *
-  60 *
-  1000;
-}
-
-
-/* -------------------------
-   TAG:NEW SEARCH
-------------------------- */
-
-async function getTagNewAlbums(
-  token
-) {
-
-  let albums = [];
-
-  for (
-    let page = 0;
-    page < TAG_NEW_PAGES;
-    page++
-  ) {
-
-    const offset =
-      page * 10;
-
-    const data =
-      await spotifyFetch(
-
-        "https://api.spotify.com/v1/search?" +
-
-        new URLSearchParams({
-
-          q:
-            "tag:new",
-
-          type:
-            "album",
-
-          market:
-            "US",
-
-          limit:
-            "10",
-
-          offset:
-            offset.toString()
-
-        }),
-
-        token
+    const oldCache =
+      JSON.parse(
+        localStorage.getItem(
+          "hybrid_release_cache"
+        )
       );
 
-    albums.push(
-      ...(data.albums?.items || [])
-    );
+    if (
+      !oldCache ||
+      !oldCache.direct
+    ) {
+      return null;
+    }
+
+    const entry =
+      oldCache.direct[
+        requestedName
+      ];
 
     if (
-      (data.albums?.items || [])
-        .length < 10
+      entry &&
+      entry.artistId
     ) {
-      break;
+      return entry.artistId;
     }
-  }
 
-  return albums;
+  } catch (e) {}
+
+  return null;
 }
 
 
-/* -------------------------
-   TRUSTED MATCH
-------------------------- */
+/* -----------------------------
+   NORMALIZE
+----------------------------- */
 
 function normalize(text) {
 
@@ -835,36 +670,16 @@ function normalize(text) {
     text || ""
   )
   .toLowerCase()
-  .replace(/[^a-z0-9]/g, "");
-}
-
-
-function albumMatchesTrustedArtist(
-  album,
-  trustedArtists
-) {
-
-  const trusted =
-    trustedArtists.map(
-      normalize
-    );
-
-  return (
-    album.artists || []
-  ).some(
-    artist =>
-      trusted.includes(
-        normalize(
-          artist.name
-        )
-      )
+  .replace(
+    /[^a-z0-9]/g,
+    ""
   );
 }
 
 
-/* -------------------------
-   ARTIST LOOKUP
-------------------------- */
+/* -----------------------------
+   FIND ARTIST
+----------------------------- */
 
 async function findArtist(
   name,
@@ -884,6 +699,9 @@ async function findArtist(
         type:
           "artist",
 
+        market:
+          "US",
+
         limit:
           "5"
 
@@ -895,24 +713,41 @@ async function findArtist(
   const items =
     data.artists?.items || [];
 
-  return (
+  const exact =
     items.find(
       artist =>
         normalize(
           artist.name
         ) ===
         normalize(name)
-    ) || null
-  );
+    );
+
+  return {
+    exact:
+      exact || null,
+
+    candidates:
+      items.map(
+        artist => ({
+          id:
+            artist.id,
+          name:
+            artist.name,
+          spotify:
+            artist.external_urls
+              ?.spotify || ""
+        })
+      )
+  };
 }
 
 
-/* -------------------------
-   DIRECT ARTIST RELEASES
-------------------------- */
+/* -----------------------------
+   ARTIST ALBUMS
+----------------------------- */
 
-async function getArtistReleases(
-  artist,
+async function getArtistAlbums(
+  artistId,
   token
 ) {
 
@@ -920,7 +755,7 @@ async function getArtistReleases(
     await spotifyFetch(
 
       "https://api.spotify.com/v1/artists/" +
-      artist.id +
+      artistId +
       "/albums?" +
 
       new URLSearchParams({
@@ -932,39 +767,49 @@ async function getArtistReleases(
           "US",
 
         limit:
-          "10"
+          "10",
+
+        offset:
+          "0"
 
       }),
 
       token
     );
 
-  return (
-    data.items || []
-  ).map(
-    release => ({
-      ...release,
-      source:
-        "Direct artist check"
-    })
-  );
+  return data.items || [];
 }
 
 
-/* -------------------------
-   DATE FILTER
-------------------------- */
+/* -----------------------------
+   DATE RANGE
+----------------------------- */
 
-function isRecent(
+function releasePassesDate(
   release
 ) {
 
   if (
-    !release.release_date ||
-    release.release_date_precision !==
-      "day"
+    !release.release_date
   ) {
     return false;
+  }
+
+  /*
+    Spotify can return year,
+    month or day precision.
+    For diagnostics, don't
+    silently reject month/year
+    precision — only exact-day
+    results are date-filtered.
+  */
+
+  if (
+    release.release_date_precision
+      !== "day"
+  ) {
+
+    return true;
   }
 
   const now =
@@ -988,6 +833,15 @@ function isRecent(
     cutoff.setDate(
       cutoff.getDate() - 6
     );
+
+  } else if (
+    selectedRange ===
+    "month"
+  ) {
+
+    cutoff.setDate(
+      cutoff.getDate() - 29
+    );
   }
 
   const date =
@@ -1003,13 +857,11 @@ function isRecent(
 }
 
 
-/* -------------------------
-   MAIN
-------------------------- */
+/* -----------------------------
+   RUN DIAGNOSTIC
+----------------------------- */
 
-async function findNewMusic(
-  forceRefresh
-) {
+async function runDiagnostic() {
 
   const token =
     localStorage.getItem(
@@ -1027,159 +879,210 @@ async function findNewMusic(
       "status"
     );
 
-  const trustedArtists =
-    getTrustedArtists();
+  const diagnostics = [];
 
-  const cache =
-    getCache();
+  const allReleases = [];
 
   try {
 
-    /*
-      TAG:NEW CACHE
-    */
-
-    if (
-      forceRefresh ||
-      !cache.tagNew ||
-      !cacheFresh(
-        cache.tagNew.checkedAt
-      )
+    for (
+      let i = 0;
+      i < priorityArtists.length;
+      i++
     ) {
+
+      const requestedName =
+        priorityArtists[i];
 
       status.innerText =
-        "Checking Spotify's new releases...";
+        `Checking ${i + 1} of ${priorityArtists.length}: ${requestedName}`;
 
-      const tagNewAlbums =
-        await getTagNewAlbums(
-          token
+
+      /*
+        First see if an ID was
+        preserved from previous cache.
+      */
+
+      let artistId =
+        getExistingArtistId(
+          requestedName
         );
 
-      cache.tagNew = {
-        checkedAt:
-          Date.now(),
-        releases:
-          tagNewAlbums
-      };
+      let matchedName =
+        null;
 
-      saveCache(
-        cache
-      );
-    }
+      let candidates = [];
+
+      let lookupMethod =
+        "existing cache";
 
 
-    /*
-      ROTATING DIRECT CHECK
-    */
+      if (!artistId) {
 
-    const start =
-      cache.rotation || 0;
+        const search =
+          await findArtist(
+            requestedName,
+            token
+          );
 
-    const batch = [];
+        candidates =
+          search.candidates;
 
-    for (
-      let i = 0;
-      i < DIRECT_ARTISTS_PER_RUN;
-      i++
-    ) {
+        if (
+          search.exact
+        ) {
 
-      const index =
-        (
-          start + i
-        ) %
-        trustedArtists.length;
+          artistId =
+            search.exact.id;
 
-      batch.push(
-        trustedArtists[index]
-      );
-    }
+          matchedName =
+            search.exact.name;
 
-
-    for (
-      let i = 0;
-      i < batch.length;
-      i++
-    ) {
-
-      const name =
-        batch[i];
-
-      const existing =
-        cache.direct[name];
-
-      if (
-        !forceRefresh &&
-        existing &&
-        cacheFresh(
-          existing.checkedAt
-        )
-      ) {
-        continue;
+          lookupMethod =
+            "Spotify search";
+        }
       }
 
-      status.innerText =
-        "Checking trusted artists...\n" +
-        name;
 
-      const artist =
-        await findArtist(
-          name,
-          token
-        );
+      if (!artistId) {
 
-      if (!artist) {
+        diagnostics.push({
 
-        cache.direct[name] = {
-          checkedAt:
-            Date.now(),
+          requestedName:
+            requestedName,
+
+          found:
+            false,
+
+          candidates:
+            candidates,
+
           releases:
             []
-        };
+
+        });
 
         continue;
       }
 
-      const releases =
-        await getArtistReleases(
-          artist,
+
+      const albums =
+        await getArtistAlbums(
+          artistId,
           token
         );
 
-      cache.direct[name] = {
-        checkedAt:
-          Date.now(),
-        releases:
-          releases
-      };
 
-      saveCache(
-        cache
+      if (
+        !matchedName &&
+        albums.length
+      ) {
+
+        matchedName =
+          albums[0]
+            ?.artists?.find(
+              a =>
+                a.id === artistId
+            )?.name ||
+          requestedName;
+      }
+
+
+      /*
+        Sort newest first.
+      */
+
+      albums.sort(
+        (a, b) =>
+          (
+            b.release_date || ""
+          ).localeCompare(
+            a.release_date || ""
+          )
       );
+
+
+      diagnostics.push({
+
+        requestedName:
+          requestedName,
+
+        found:
+          true,
+
+        artistId:
+          artistId,
+
+        matchedName:
+          matchedName ||
+          requestedName,
+
+        lookupMethod:
+          lookupMethod,
+
+        candidates:
+          candidates,
+
+        releases:
+          albums
+
+      });
+
+
+      allReleases.push(
+        ...albums.map(
+          release => ({
+            ...release,
+            diagnosticArtist:
+              requestedName
+          })
+        )
+      );
+
+
+      /*
+        Small pause to avoid
+        hammering Spotify.
+      */
 
       await new Promise(
         resolve =>
           setTimeout(
             resolve,
-            500
+            600
           )
       );
     }
 
 
-    cache.rotation =
-      (
-        start +
-        DIRECT_ARTISTS_PER_RUN
-      ) %
-      trustedArtists.length;
+    localStorage.setItem(
+      "priority_diagnostics",
+      JSON.stringify({
 
-    saveCache(
-      cache
+        checkedAt:
+          Date.now(),
+
+        artists:
+          diagnostics
+
+      })
     );
 
-    showCachedResults();
+
+    status.innerText =
+      "Priority artist check complete.";
+
+    displayDiagnostics(
+      diagnostics
+    );
+
+    displayReleases(
+      allReleases
+    );
 
   } catch (error) {
+
+    console.error(error);
 
     if (
       error.message ===
@@ -1187,25 +1090,34 @@ async function findNewMusic(
     ) {
 
       status.innerHTML =
-        "<b>Spotify quota reached.</b><br><br>" +
-        "Showing anything already cached.";
+        "<b>Spotify development quota reached.</b><br>" +
+        "Do not keep retrying. Existing diagnostic data is shown below.";
 
-      showCachedResults();
+      displaySavedDiagnosticResults();
       return;
     }
+
 
     if (
-      error.message ===
-      "RATE_LIMIT"
+      error.message.startsWith(
+        "RATE_LIMIT"
+      )
     ) {
 
-      status.innerHTML =
-        "Spotify asked us to slow down.<br><br>" +
-        "Showing cached results.";
+      const seconds =
+        error.message.split(":")[1];
 
-      showCachedResults();
+      status.innerHTML =
+        "Spotify rate-limited the request." +
+        (
+          seconds !== "?"
+            ? `<br>Retry after approximately ${seconds} seconds.`
+            : ""
+        );
+
       return;
     }
+
 
     if (
       error.message ===
@@ -1217,139 +1129,144 @@ async function findNewMusic(
       );
 
       status.innerText =
-        "Spotify session expired. Reconnect Spotify.";
+        "Spotify session expired. Disconnect and reconnect.";
 
       return;
     }
 
+
     status.innerText =
-      "Something went wrong while checking Spotify.";
+      "Spotify returned an unexpected error.";
   }
 }
 
 
-/* -------------------------
-   DISPLAY CACHE
-------------------------- */
+/* -----------------------------
+   DISPLAY DIAGNOSTICS
+----------------------------- */
 
-function showCachedResults() {
+function displayDiagnostics(
+  diagnostics
+) {
 
-  const cache =
-    getCache();
+  const container =
+    document.getElementById(
+      "diagnostics"
+    );
 
-  const trustedArtists =
-    getTrustedArtists();
+  container.innerHTML =
+    "<div class='diagnostics'><b>Spotify diagnostic</b></div>";
 
-  let releases = [];
+  const box =
+    container.firstElementChild;
 
 
-  /*
-    TAG:NEW TRUSTED MATCHES
-  */
+  diagnostics.forEach(
+    item => {
 
-  if (
-    cache.tagNew &&
-    Array.isArray(
-      cache.tagNew.releases
-    )
-  ) {
-
-    const matched =
-      cache.tagNew.releases
-        .filter(
-          album =>
-            albumMatchesTrustedArtist(
-              album,
-              trustedArtists
-            )
-        )
-        .map(
-          album => ({
-            ...album,
-            source:
-              "Spotify new releases"
-          })
+      const div =
+        document.createElement(
+          "div"
         );
 
-    releases.push(
-      ...matched
-    );
-  }
+      div.className =
+        "diagnostic";
 
 
-  /*
-    DIRECT ARTIST CACHE
-  */
+      if (!item.found) {
 
-  Object.values(
-    cache.direct || {}
-  ).forEach(
-    entry => {
+        div.innerHTML =
+          `<b>${escapeHtml(item.requestedName)}</b><br>
+           <span class="warning">
+             Exact Spotify artist match NOT found.
+           </span>`;
+
+        if (
+          item.candidates?.length
+        ) {
+
+          div.innerHTML +=
+            `<div class="small">
+              Spotify suggested:
+              ${item.candidates
+                .map(
+                  c =>
+                    escapeHtml(
+                      c.name
+                    )
+                )
+                .join(", ")}
+            </div>`;
+        }
+
+        box.appendChild(div);
+        return;
+      }
+
+
+      const newest =
+        item.releases?.[0];
+
+
+      div.innerHTML =
+
+        `<b>${escapeHtml(item.requestedName)}</b><br>
+
+         <span class="good">
+           ✓ Spotify artist found
+         </span><br>
+
+         <span class="small">
+           Matched as:
+           ${escapeHtml(item.matchedName)}
+           <br>
+           ID:
+           ${escapeHtml(item.artistId)}
+           <br>
+           Lookup:
+           ${escapeHtml(item.lookupMethod)}
+         </span>`;
+
 
       if (
-        Array.isArray(
-          entry.releases
-        )
+        newest
       ) {
 
-        releases.push(
-          ...entry.releases
-        );
+        div.innerHTML +=
+
+          `<br><br>
+           Latest item returned:<br>
+           <b>${escapeHtml(newest.name)}</b><br>
+           ${escapeHtml(newest.release_date || "No date")}
+           (${escapeHtml(newest.release_date_precision || "unknown precision")})
+           <br>
+           Spotify returned ${item.releases.length} recent catalog items.`;
+
+      } else {
+
+        div.innerHTML +=
+
+          `<br><br>
+           <span class="warning">
+             Spotify returned zero albums/singles for this artist.
+           </span>`;
       }
-    }
-  );
 
 
-  /*
-    DEDUPE
-  */
-
-  const unique =
-    Array.from(
-      new Map(
-        releases
-          .filter(
-            release =>
-              release?.id
-          )
-          .map(
-            release => [
-              release.id,
-              release
-            ]
-          )
-      ).values()
-    );
-
-
-  const recent =
-    unique
-      .filter(
-        isRecent
-      )
-      .sort(
-        (a, b) =>
-          b.release_date
-            .localeCompare(
-              a.release_date
-            )
+      box.appendChild(
+        div
       );
-
-
-  displayReleases(
-    recent,
-    cache
+    }
   );
 }
 
 
-/* -------------------------
-   DISPLAY
-------------------------- */
+/* -----------------------------
+   DISPLAY RELEASES
+----------------------------- */
 
 function displayReleases(
-  releases,
-  cache
+  releases
 ) {
 
   const results =
@@ -1357,51 +1274,54 @@ function displayReleases(
       "results"
     );
 
-  const status =
-    document.getElementById(
-      "status"
-    );
-
   results.innerHTML =
     "";
 
 
+  const unique =
+    Array.from(
+      new Map(
+        releases
+          .filter(
+            r => r?.id
+          )
+          .map(
+            r => [
+              r.id,
+              r
+            ]
+          )
+      ).values()
+    );
+
+
+  const filtered =
+    unique
+      .filter(
+        releasePassesDate
+      )
+      .sort(
+        (a, b) =>
+          (
+            b.release_date || ""
+          ).localeCompare(
+            a.release_date || ""
+          )
+      );
+
+
   if (
-    releases.length === 0
+    filtered.length === 0
   ) {
 
-    status.innerHTML =
-
-      selectedRange ===
-      "today"
-
-      ? "No trusted releases found today."
-
-      : "No trusted releases found in the last 7 days.";
-
-
-    status.innerHTML +=
-      `<div class="debug">
-        New-release cache:
-        ${cache.tagNew ? "yes" : "no"}.
-        Direct artists cached:
-        ${Object.keys(cache.direct || {}).length}.
-      </div>`;
+    results.innerHTML =
+      "<div class='status'>No releases passed the selected date filter.</div>";
 
     return;
   }
 
 
-  status.innerHTML =
-    `<b>${releases.length} trusted new releases found</b>
-
-    <div class="debug">
-      Direct artists cached:
-      ${Object.keys(cache.direct || {}).length}
-    </div>`;
-
-
-  releases.forEach(
+  filtered.forEach(
     release => {
 
       const div =
@@ -1428,13 +1348,6 @@ function displayReleases(
         "";
 
 
-      const type =
-        release.album_type ===
-        "album"
-          ? "Album"
-          : "Single / EP";
-
-
       div.innerHTML = `
 
         ${
@@ -1442,7 +1355,7 @@ function displayReleases(
             ? `<img
                 class="cover"
                 src="${image}"
-                alt="Album artwork"
+                alt="Spotify artwork"
               >`
             : ""
         }
@@ -1450,33 +1363,23 @@ function displayReleases(
         <div class="release-info">
 
           <div class="release-name">
-            ${escapeHtml(
-              release.name
-            )}
+            ${escapeHtml(release.name)}
           </div>
 
           <div class="artist">
-            ${escapeHtml(
-              artists
-            )}
+            ${escapeHtml(artists)}
           </div>
 
           <div class="meta">
             Released:
-            ${release.release_date}
-            • ${type}
+            ${escapeHtml(release.release_date || "unknown")}
+            •
+            ${escapeHtml(release.album_type || "release")}
           </div>
-
-          <span class="badge">
-            ${escapeHtml(
-              release.source ||
-              "Trusted"
-            )}
-          </span>
 
           <a
             class="spotify-link"
-            href="${release.external_urls.spotify}"
+            href="${release.external_urls?.spotify || "#"}"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -1486,6 +1389,7 @@ function displayReleases(
         </div>
       `;
 
+
       results.appendChild(
         div
       );
@@ -1494,9 +1398,54 @@ function displayReleases(
 }
 
 
-/* -------------------------
+/* -----------------------------
+   SAVED DIAGNOSTICS
+----------------------------- */
+
+function displaySavedDiagnosticResults() {
+
+  try {
+
+    const saved =
+      JSON.parse(
+        localStorage.getItem(
+          "priority_diagnostics"
+        )
+      );
+
+    if (
+      !saved ||
+      !saved.artists
+    ) {
+      return;
+    }
+
+    displayDiagnostics(
+      saved.artists
+    );
+
+    const releases = [];
+
+    saved.artists.forEach(
+      item => {
+
+        releases.push(
+          ...(item.releases || [])
+        );
+      }
+    );
+
+    displayReleases(
+      releases
+    );
+
+  } catch (e) {}
+}
+
+
+/* -----------------------------
    SAFETY
-------------------------- */
+----------------------------- */
 
 function escapeHtml(text) {
 
@@ -1512,9 +1461,9 @@ function escapeHtml(text) {
 }
 
 
-/* -------------------------
+/* -----------------------------
    LOGOUT
-------------------------- */
+----------------------------- */
 
 function logout() {
 
@@ -1537,4 +1486,4 @@ handleCallback();
 </script>
 
 </body>
-</html>
+  </html>
