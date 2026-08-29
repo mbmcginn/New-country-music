@@ -27,7 +27,7 @@
     .subtitle {
       text-align: center;
       color: #b3b3b3;
-      line-height: 1.45;
+      line-height: 1.4;
     }
 
     .filters {
@@ -158,7 +158,7 @@
 
     textarea {
       width: 100%;
-      min-height: 150px;
+      min-height: 170px;
       box-sizing: border-box;
       background: #181818;
       color: white;
@@ -177,8 +177,7 @@
   <h1>🎵 New Country Music Finder</h1>
 
   <p class="subtitle">
-    New releases from trusted country, Red Dirt, Americana,
-    and related artists.
+    Recent releases from artists you trust.
   </p>
 
   <button
@@ -222,7 +221,7 @@
       class="secondary"
       onclick="findNewMusic(true)"
     >
-      Force Refresh Spotify
+      Force Refresh
     </button>
 
     <button
@@ -237,9 +236,8 @@
       class="artist-box"
       style="display:none;"
     >
-      <p>
-        One artist per line:
-      </p>
+
+      <p>One artist per line:</p>
 
       <textarea id="artistList"></textarea>
 
@@ -249,6 +247,7 @@
       >
         Save Trusted Artists
       </button>
+
     </div>
 
     <button
@@ -278,7 +277,9 @@ const redirectUri =
 
 const CACHE_HOURS = 24;
 
-const MAX_ARTISTS_PER_REFRESH = 20;
+const TAG_NEW_PAGES = 5;
+
+const DIRECT_ARTISTS_PER_RUN = 8;
 
 let selectedRange = "today";
 
@@ -304,7 +305,17 @@ const defaultTrustedArtists = [
   "Zach Bryan",
   "Ryan Bingham",
   "Reckless Kelly",
-  "Micky and the Motorcars"
+  "Micky and the Motorcars",
+  "Treaty Oak Revival",
+  "William Clark Green",
+  "Josh Meloy",
+  "Hayes Carll",
+  "Corb Lund",
+  "Colter Wall",
+  "The Steel Woods",
+  "Ward Davis",
+  "Josh Abbott Band",
+  "Randy Rogers Band"
 
 ];
 
@@ -331,7 +342,7 @@ function setRange(range) {
       range === "week"
     );
 
-  showCachedResultsOnly();
+  showCachedResults();
 }
 
 
@@ -389,13 +400,10 @@ function toggleArtistEditor() {
 
 function saveTrustedArtists() {
 
-  const raw =
-    document.getElementById(
-      "artistList"
-    ).value;
-
   const artists =
-    raw
+    document
+      .getElementById("artistList")
+      .value
       .split("\n")
       .map(x => x.trim())
       .filter(Boolean);
@@ -406,14 +414,14 @@ function saveTrustedArtists() {
   );
 
   document.getElementById(
-    "status"
-  ).innerText =
-    "Trusted artist list saved.";
-
-  document.getElementById(
     "artistEditor"
   ).style.display =
     "none";
+
+  document.getElementById(
+    "status"
+  ).innerText =
+    "Trusted artist list saved.";
 }
 
 
@@ -432,8 +440,7 @@ function randomString(length) {
 
     result += chars.charAt(
       Math.floor(
-        Math.random() *
-        chars.length
+        Math.random() * chars.length
       )
     );
   }
@@ -487,23 +494,15 @@ async function loginWithSpotify() {
   url.search =
     new URLSearchParams({
 
-      client_id:
-        clientId,
+      client_id: clientId,
 
-      response_type:
-        "code",
+      response_type: "code",
 
-      redirect_uri:
-        redirectUri,
+      redirect_uri: redirectUri,
 
-      scope:
-        "user-follow-read user-top-read",
+      code_challenge_method: "S256",
 
-      code_challenge_method:
-        "S256",
-
-      code_challenge:
-        challenge
+      code_challenge: challenge
 
     }).toString();
 
@@ -528,8 +527,7 @@ async function getToken(code) {
       "https://accounts.spotify.com/api/token",
       {
 
-        method:
-          "POST",
+        method: "POST",
 
         headers: {
           "Content-Type":
@@ -539,14 +537,12 @@ async function getToken(code) {
         body:
           new URLSearchParams({
 
-            client_id:
-              clientId,
+            client_id: clientId,
 
             grant_type:
               "authorization_code",
 
-            code:
-              code,
+            code: code,
 
             redirect_uri:
               redirectUri,
@@ -561,9 +557,7 @@ async function getToken(code) {
   const data =
     await response.json();
 
-  if (
-    data.access_token
-  ) {
+  if (data.access_token) {
 
     localStorage.setItem(
       "spotify_access_token",
@@ -591,10 +585,10 @@ async function handleCallback() {
 
   if (code) {
 
-    document
-      .getElementById("status")
-      .innerText =
-        "Connecting to Spotify...";
+    document.getElementById(
+      "status"
+    ).innerText =
+      "Connecting to Spotify...";
 
     const token =
       await getToken(code);
@@ -605,18 +599,16 @@ async function handleCallback() {
       redirectUri
     );
 
-    if (
-      token.access_token
-    ) {
+    if (token.access_token) {
 
       showConnected();
 
     } else {
 
-      document
-        .getElementById("status")
-        .innerText =
-          "Spotify connection failed.";
+      document.getElementById(
+        "status"
+      ).innerText =
+        "Spotify connection failed.";
     }
 
   } else {
@@ -635,27 +627,27 @@ async function handleCallback() {
 
 function showConnected() {
 
-  document
-    .getElementById("loginButton")
-    .style.display =
-      "none";
+  document.getElementById(
+    "loginButton"
+  ).style.display =
+    "none";
 
-  document
-    .getElementById("controls")
-    .style.display =
-      "block";
+  document.getElementById(
+    "controls"
+  ).style.display =
+    "block";
 
-  document
-    .getElementById("status")
-    .innerText =
-      "Spotify connected.";
+  document.getElementById(
+    "status"
+  ).innerText =
+    "Spotify connected.";
 
-  showCachedResultsOnly();
+  showCachedResults();
 }
 
 
 /* -------------------------
-   SPOTIFY FETCH
+   FETCH
 ------------------------- */
 
 async function spotifyFetch(
@@ -674,17 +666,13 @@ async function spotifyFetch(
       }
     );
 
-  if (
-    response.status === 401
-  ) {
+  if (response.status === 401) {
     throw new Error(
       "SESSION_EXPIRED"
     );
   }
 
-  if (
-    response.status === 429
-  ) {
+  if (response.status === 429) {
 
     let body = {};
 
@@ -694,9 +682,9 @@ async function spotifyFetch(
     } catch (e) {}
 
     if (
-      body?.error?.reason ===
-        "QUOTA_EXCEEDED" ||
       body?.reason ===
+        "QUOTA_EXCEEDED" ||
+      body?.error?.reason ===
         "QUOTA_EXCEEDED"
     ) {
 
@@ -710,9 +698,7 @@ async function spotifyFetch(
     );
   }
 
-  if (
-    !response.ok
-  ) {
+  if (!response.ok) {
 
     throw new Error(
       "SPOTIFY_ERROR"
@@ -724,7 +710,7 @@ async function spotifyFetch(
 
 
 /* -------------------------
-   CACHE HELPERS
+   CACHE
 ------------------------- */
 
 function getCache() {
@@ -733,13 +719,21 @@ function getCache() {
 
     return JSON.parse(
       localStorage.getItem(
-        "release_cache"
+        "hybrid_release_cache"
       )
-    ) || {};
+    ) || {
+      tagNew: null,
+      direct: {},
+      rotation: 0
+    };
 
   } catch (e) {
 
-    return {};
+    return {
+      tagNew: null,
+      direct: {},
+      rotation: 0
+    };
   }
 }
 
@@ -747,32 +741,124 @@ function getCache() {
 function saveCache(cache) {
 
   localStorage.setItem(
-    "release_cache",
+    "hybrid_release_cache",
     JSON.stringify(cache)
   );
 }
 
 
-function cacheIsFresh(
-  cached
-) {
+function cacheFresh(timestamp) {
 
-  if (
-    !cached ||
-    !cached.checkedAt
-  ) {
+  if (!timestamp) {
     return false;
   }
 
-  const age =
-    Date.now() -
-    cached.checkedAt;
+  return (
+    Date.now() - timestamp
+  ) <
+  CACHE_HOURS *
+  60 *
+  60 *
+  1000;
+}
 
-  return age <
-    CACHE_HOURS *
-    60 *
-    60 *
-    1000;
+
+/* -------------------------
+   TAG:NEW SEARCH
+------------------------- */
+
+async function getTagNewAlbums(
+  token
+) {
+
+  let albums = [];
+
+  for (
+    let page = 0;
+    page < TAG_NEW_PAGES;
+    page++
+  ) {
+
+    const offset =
+      page * 10;
+
+    const data =
+      await spotifyFetch(
+
+        "https://api.spotify.com/v1/search?" +
+
+        new URLSearchParams({
+
+          q:
+            "tag:new",
+
+          type:
+            "album",
+
+          market:
+            "US",
+
+          limit:
+            "10",
+
+          offset:
+            offset.toString()
+
+        }),
+
+        token
+      );
+
+    albums.push(
+      ...(data.albums?.items || [])
+    );
+
+    if (
+      (data.albums?.items || [])
+        .length < 10
+    ) {
+      break;
+    }
+  }
+
+  return albums;
+}
+
+
+/* -------------------------
+   TRUSTED MATCH
+------------------------- */
+
+function normalize(text) {
+
+  return (
+    text || ""
+  )
+  .toLowerCase()
+  .replace(/[^a-z0-9]/g, "");
+}
+
+
+function albumMatchesTrustedArtist(
+  album,
+  trustedArtists
+) {
+
+  const trusted =
+    trustedArtists.map(
+      normalize
+    );
+
+  return (
+    album.artists || []
+  ).some(
+    artist =>
+      trusted.includes(
+        normalize(
+          artist.name
+        )
+      )
+  );
 }
 
 
@@ -780,7 +866,7 @@ function cacheIsFresh(
    ARTIST LOOKUP
 ------------------------- */
 
-async function findArtistByName(
+async function findArtist(
   name,
   token
 ) {
@@ -809,20 +895,20 @@ async function findArtistByName(
   const items =
     data.artists?.items || [];
 
-  const exact =
+  return (
     items.find(
       artist =>
-        artist.name
-          .toLowerCase() ===
-        name.toLowerCase()
-    );
-
-  return exact || null;
+        normalize(
+          artist.name
+        ) ===
+        normalize(name)
+    ) || null
+  );
 }
 
 
 /* -------------------------
-   ARTIST RELEASES
+   DIRECT ARTIST RELEASES
 ------------------------- */
 
 async function getArtistReleases(
@@ -858,8 +944,8 @@ async function getArtistReleases(
   ).map(
     release => ({
       ...release,
-      trustedArtist:
-        artist.name
+      source:
+        "Direct artist check"
     })
   );
 }
@@ -904,21 +990,21 @@ function isRecent(
     );
   }
 
-  const releaseDate =
+  const date =
     new Date(
       release.release_date +
       "T00:00:00"
     );
 
   return (
-    releaseDate >= cutoff &&
-    releaseDate <= now
+    date >= cutoff &&
+    date <= now
   );
 }
 
 
 /* -------------------------
-   MAIN SEARCH
+   MAIN
 ------------------------- */
 
 async function findNewMusic(
@@ -941,97 +1027,115 @@ async function findNewMusic(
       "status"
     );
 
-  const artists =
+  const trustedArtists =
     getTrustedArtists();
 
   const cache =
     getCache();
 
-  let checked = 0;
-
-  let usedCache = 0;
-
-  let apiCallsNeeded = 0;
-
-
-  for (
-    const name of artists
-  ) {
-
-    const cached =
-      cache[name];
-
-    if (
-      !forceRefresh &&
-      cacheIsFresh(cached)
-    ) {
-
-      usedCache++;
-
-    } else {
-
-      apiCallsNeeded++;
-    }
-  }
-
-
-  if (
-    apiCallsNeeded >
-    MAX_ARTISTS_PER_REFRESH
-  ) {
-
-    status.innerHTML =
-      `To protect your Spotify quota, this refresh will check only
-      ${MAX_ARTISTS_PER_REFRESH} stale artists.<br><br>
-      The rest will stay cached until a later refresh.`;
-  }
-
-
   try {
 
-    let refreshCount = 0;
+    /*
+      TAG:NEW CACHE
+    */
 
-    for (
-      const name of artists
+    if (
+      forceRefresh ||
+      !cache.tagNew ||
+      !cacheFresh(
+        cache.tagNew.checkedAt
+      )
     ) {
 
-      const cached =
-        cache[name];
+      status.innerText =
+        "Checking Spotify's new releases...";
+
+      const tagNewAlbums =
+        await getTagNewAlbums(
+          token
+        );
+
+      cache.tagNew = {
+        checkedAt:
+          Date.now(),
+        releases:
+          tagNewAlbums
+      };
+
+      saveCache(
+        cache
+      );
+    }
+
+
+    /*
+      ROTATING DIRECT CHECK
+    */
+
+    const start =
+      cache.rotation || 0;
+
+    const batch = [];
+
+    for (
+      let i = 0;
+      i < DIRECT_ARTISTS_PER_RUN;
+      i++
+    ) {
+
+      const index =
+        (
+          start + i
+        ) %
+        trustedArtists.length;
+
+      batch.push(
+        trustedArtists[index]
+      );
+    }
+
+
+    for (
+      let i = 0;
+      i < batch.length;
+      i++
+    ) {
+
+      const name =
+        batch[i];
+
+      const existing =
+        cache.direct[name];
 
       if (
         !forceRefresh &&
-        cacheIsFresh(cached)
+        existing &&
+        cacheFresh(
+          existing.checkedAt
+        )
       ) {
         continue;
       }
 
-      if (
-        refreshCount >=
-        MAX_ARTISTS_PER_REFRESH
-      ) {
-        break;
-      }
-
       status.innerText =
-        "Checking Spotify...\n" +
+        "Checking trusted artists...\n" +
         name;
 
       const artist =
-        await findArtistByName(
+        await findArtist(
           name,
           token
         );
 
       if (!artist) {
 
-        cache[name] = {
+        cache.direct[name] = {
           checkedAt:
             Date.now(),
           releases:
             []
         };
 
-        refreshCount++;
         continue;
       }
 
@@ -1041,13 +1145,9 @@ async function findNewMusic(
           token
         );
 
-      cache[name] = {
+      cache.direct[name] = {
         checkedAt:
           Date.now(),
-        artistId:
-          artist.id,
-        artistName:
-          artist.name,
         releases:
           releases
       };
@@ -1055,8 +1155,6 @@ async function findNewMusic(
       saveCache(
         cache
       );
-
-      refreshCount++;
 
       await new Promise(
         resolve =>
@@ -1067,11 +1165,19 @@ async function findNewMusic(
       );
     }
 
+
+    cache.rotation =
+      (
+        start +
+        DIRECT_ARTISTS_PER_RUN
+      ) %
+      trustedArtists.length;
+
     saveCache(
       cache
     );
 
-    showCachedResultsOnly();
+    showCachedResults();
 
   } catch (error) {
 
@@ -1082,10 +1188,9 @@ async function findNewMusic(
 
       status.innerHTML =
         "<b>Spotify quota reached.</b><br><br>" +
-        "Your existing cached results are still available.";
+        "Showing anything already cached.";
 
-      showCachedResultsOnly();
-
+      showCachedResults();
       return;
     }
 
@@ -1096,10 +1201,9 @@ async function findNewMusic(
 
       status.innerHTML =
         "Spotify asked us to slow down.<br><br>" +
-        "Your cached results are still available.";
+        "Showing cached results.";
 
-      showCachedResultsOnly();
-
+      showCachedResults();
       return;
     }
 
@@ -1125,32 +1229,68 @@ async function findNewMusic(
 
 
 /* -------------------------
-   DISPLAY FROM CACHE
+   DISPLAY CACHE
 ------------------------- */
 
-function showCachedResultsOnly() {
+function showCachedResults() {
 
   const cache =
     getCache();
 
+  const trustedArtists =
+    getTrustedArtists();
+
   let releases = [];
 
-  let cachedArtists = 0;
 
+  /*
+    TAG:NEW TRUSTED MATCHES
+  */
+
+  if (
+    cache.tagNew &&
+    Array.isArray(
+      cache.tagNew.releases
+    )
+  ) {
+
+    const matched =
+      cache.tagNew.releases
+        .filter(
+          album =>
+            albumMatchesTrustedArtist(
+              album,
+              trustedArtists
+            )
+        )
+        .map(
+          album => ({
+            ...album,
+            source:
+              "Spotify new releases"
+          })
+        );
+
+    releases.push(
+      ...matched
+    );
+  }
+
+
+  /*
+    DIRECT ARTIST CACHE
+  */
 
   Object.values(
-    cache
+    cache.direct || {}
   ).forEach(
     entry => {
 
       if (
-        entry &&
         Array.isArray(
           entry.releases
         )
       ) {
-
-        cachedArtists++;
 
         releases.push(
           ...entry.releases
@@ -1159,6 +1299,10 @@ function showCachedResultsOnly() {
     }
   );
 
+
+  /*
+    DEDUPE
+  */
 
   const unique =
     Array.from(
@@ -1194,7 +1338,7 @@ function showCachedResultsOnly() {
 
   displayReleases(
     recent,
-    cachedArtists
+    cache
   );
 }
 
@@ -1205,7 +1349,7 @@ function showCachedResultsOnly() {
 
 function displayReleases(
   releases,
-  cachedArtists
+  cache
 ) {
 
   const results =
@@ -1218,7 +1362,8 @@ function displayReleases(
       "status"
     );
 
-  results.innerHTML = "";
+  results.innerHTML =
+    "";
 
 
   if (
@@ -1230,16 +1375,17 @@ function displayReleases(
       selectedRange ===
       "today"
 
-      ? "No cached trusted releases found today."
+      ? "No trusted releases found today."
 
-      : "No cached trusted releases found in the last 7 days.";
+      : "No trusted releases found in the last 7 days.";
 
 
     status.innerHTML +=
-
       `<div class="debug">
-        ${cachedArtists}
-        artists currently cached.
+        New-release cache:
+        ${cache.tagNew ? "yes" : "no"}.
+        Direct artists cached:
+        ${Object.keys(cache.direct || {}).length}.
       </div>`;
 
     return;
@@ -1247,12 +1393,11 @@ function displayReleases(
 
 
   status.innerHTML =
-
     `<b>${releases.length} trusted new releases found</b>
 
     <div class="debug">
-      ${cachedArtists}
-      artists currently cached.
+      Direct artists cached:
+      ${Object.keys(cache.direct || {}).length}
     </div>`;
 
 
@@ -1271,7 +1416,8 @@ function displayReleases(
       const artists =
         (release.artists || [])
           .map(
-            a => a.name
+            artist =>
+              artist.name
           )
           .join(", ");
 
@@ -1322,7 +1468,10 @@ function displayReleases(
           </div>
 
           <span class="badge">
-            Trusted Artist
+            ${escapeHtml(
+              release.source ||
+              "Trusted"
+            )}
           </span>
 
           <a
@@ -1336,7 +1485,6 @@ function displayReleases(
 
         </div>
       `;
-
 
       results.appendChild(
         div
